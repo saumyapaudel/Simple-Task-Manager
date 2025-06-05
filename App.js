@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, Touchable, TouchableOpacity, View, ScrollView } from 'react-native';
 import TaskItem from './components/TaskItem';
 import { KeyboardAvoidingView, TextInput, Keyboard } from 'react-native';
 
 export default function App() {
   const [taskItem, setTaskItem] = useState();
   const [taskItemsArr, setTaskItemsArr] = useState([]);
-
+  
+  // Adds a new task if input is not empty, then clears input and dismisses keyboard
   const addTask = () => {
     if(taskItem != ''){
       setTaskItemsArr([...taskItemsArr, taskItem]);
@@ -15,7 +15,7 @@ export default function App() {
       Keyboard.dismiss();
     }
   }
-  
+  // Deletes a task by creating a copy, removing the item, and updating state
   const deleteTask = (index) => {
     const copy = [...taskItemsArr];
     copy.splice(index, 1);
@@ -27,8 +27,15 @@ export default function App() {
         <View style={styles.wrapper}>
           <Text style={styles.title}>SIMPLE TASK MANAGER</Text>
 
+          <ScrollView 
+          style={styles.tasksContainer}
+          contentContainerStyle={styles.tasksContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           <View style={styles.tasks}>
             {
+              // Render each task with a unique key and pass delete function
               taskItemsArr.map((item, index) => (
                 <TaskItem 
                   key={index} 
@@ -39,14 +46,23 @@ export default function App() {
               ))
             }
           </View>
+          
+          {/* Bottom padding to ensure not hidden behind input*/}
+          <View style={styles.bottomPadding} />
+        </ScrollView>
 
         </View>
-    
+    {/* Moves input field above keyboard on iOS and Android */}
     <KeyboardAvoidingView 
-    behavior = {Platform.OS === 'ios' ? 'padding' : 'height'}
+    behavior = 'padding'
     style={styles.inputTaskWrapper}
+    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
-      <TextInput style={styles.taskInput} placeholder= 'E.g.: Do Laundry, Walk the Dog, etc...' onChangeText={text => setTaskItem(text)} value={taskItem}/>
+      <TextInput 
+      style={styles.taskInput} 
+      placeholder= 'Enter a task' 
+      onChangeText={text => setTaskItem(text)} 
+      value={taskItem}/>
       <TouchableOpacity onPress={() => addTask()}>
         <View style= {styles.addTaskWrapper}>
           <Text style = {styles.addIcon}> + </Text>
@@ -64,6 +80,7 @@ const styles = StyleSheet.create({
 
   },
   wrapper: {
+    flex: 1,
     paddingTop: 60,
     paddingHorizontal: 20,
   },
@@ -73,15 +90,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '	#1e2a38',
   },
-  tasks: {
-    marginTop: 20,
+  bottomPadding: {
+    height: 100, 
   },
   inputTaskWrapper: {
     position: 'absolute',
     width: '100%',
-    bottom: 60,
+    bottom: 0,
+    paddingTop: 10,
     paddingHorizontal: 20, 
-    paddingVertical: 15, 
+    paddingVertical: 20, 
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

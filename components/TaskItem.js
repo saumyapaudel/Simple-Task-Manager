@@ -3,12 +3,12 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import CheckBox from "expo-checkbox";
 
 const TaskItem = (props) => {
-    const [markAsComplete, setMarkedAsComplete] = useState(false);
+    const [markAsComplete, setMarkedAsComplete] = useState(false); // Track checkbox state for task completion, default unchecked
     return (
         <View style ={styles.taskItem}>
             <CheckBox style = {styles.checkbox} value={markAsComplete} onValueChange={setMarkedAsComplete} />
             <Text style = {[styles.description, markAsComplete&& {
-                textDecorationLine: 'line-through',
+                textDecorationLine: 'line-through', // Strikethrough when task is marked complete
                 color: '#333333',
                 opacity: 0.6}
         ]}>{props.text}</Text>
